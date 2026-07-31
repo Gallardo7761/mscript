@@ -52,7 +52,7 @@ class ScriptParser(val config: YamlDocument) {
             actionName = actionString.substringBefore("(").trim()
             val argsRaw = actionString.substringAfter("(").removeSuffix(")")
             args = if (argsRaw.isNotEmpty()) {
-                argsRaw.split(",(?![^\\[]*])(?![^(]*\\))").map { it.trim() }
+                argsRaw.split(",(?![^\\[]*])(?![^(]*\\))".toRegex()).map { it.trim() }
             } else {
                 emptyList()
             }
@@ -107,8 +107,12 @@ class ScriptParser(val config: YamlDocument) {
             }
             "action_if_chance" -> {
                 val chance = args.getOrNull(0)?.toIntOrNull() ?: config.getSection("scripts.$scriptId")?.getInt("properties.${args.getOrNull(0)}") ?: 100
-                val successActions = args.getOrNull(1)?.removeSurrounding("[", "]")?.split(",(?![^(]*\\))")?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
-                val failActions = args.getOrNull(2)?.removeSurrounding("[", "]")?.split(",(?![^(]*\\))")?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
+                val successActions = args.getOrNull(1)?.removeSurrounding("[", "]")
+                    ?.split(",(?![^(]*\\))".toRegex())
+                    ?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
+                val failActions = args.getOrNull(2)?.removeSurrounding("[", "]")
+                    ?.split(",(?![^(]*\\))".toRegex())
+                    ?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
                 ActionIfChanceAction(chance, successActions, failActions)
             }
             "zombify" -> ZombifyAction()
@@ -124,13 +128,19 @@ class ScriptParser(val config: YamlDocument) {
                 }
             }
             "for_each_affected_entity" -> {
-                val loopActions = args.getOrNull(0)?.removeSurrounding("[", "]")?.split(",(?![^(]*\\))")?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
+                val loopActions = args.getOrNull(0)?.removeSurrounding("[", "]")
+                    ?.split(",(?![^(]*\\))".toRegex())
+                    ?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
                 ForEachAffectedEntityAction(loopActions)
             }
             "if" -> {
                 val condition = parseCondition(args.getOrElse(0) { "" }, scriptId)
-                val successActions = args.getOrNull(1)?.removeSurrounding("[", "]")?.split(",(?![^(]*\\))")?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
-                val failActions = args.getOrNull(2)?.removeSurrounding("[", "]")?.split(",(?![^(]*\\))")?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
+                val successActions = args.getOrNull(1)?.removeSurrounding("[", "]")
+                    ?.split(",(?![^(]*\\))".toRegex())
+                    ?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
+                val failActions = args.getOrNull(2)?.removeSurrounding("[", "]")
+                    ?.split(",(?![^(]*\\))".toRegex())
+                    ?.mapNotNull { parseAction(it.trim(), scriptId) } ?: emptyList()
                 condition?.let { ConditionAction(it, successActions, failActions) }
             }
             else -> null

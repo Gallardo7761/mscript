@@ -52,7 +52,7 @@ class TriggerManager : Listener {
         if (hand.type.isAir) return false
 
         return runCatching {
-            NBT.get(hand) { nbt -> nbt.getString(SPECIAL_ITEM_TAG) }.equals(scriptId.lowercase())
+            NBT.get<String>(hand) { nbt -> nbt.getString(SPECIAL_ITEM_TAG) }.equals(scriptId.lowercase())
         }.getOrDefault(false)
     }
 

@@ -61,7 +61,11 @@ class MScriptEngine(
             val triggerType = TriggerType.valueOf(triggerTypeStr.uppercase())
             val allBlockActions = mutableListOf<Action>()
 
-            (eventsSection.getList(triggerTypeStr) as? List<Map<*, *>>)?.forEach { rawBlock ->
+            val triggerSubSection = eventsSection.getSection(triggerTypeStr)
+
+            val rawBlocks = triggerSubSection?.getMapList("") ?: eventsSection.getMapList(triggerTypeStr)
+
+            rawBlocks.forEach { rawBlock ->
                 val conditionStr = rawBlock["condition"]?.toString() ?: "always"
                 val actionsObj = rawBlock["actions"]
 
