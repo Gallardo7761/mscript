@@ -3,8 +3,8 @@ plugins {
     `maven-publish`
 }
 
-group = "net.miarma"
-version = "26.7.1"
+group = "es.killobyte"
+version = "26.10.1"
 
 repositories {
     mavenCentral()
@@ -37,8 +37,8 @@ publishing {
 
     repositories {
         maven {
-            name = "MiarmaGit"
-            url = uri("https://git.miarma.net/api/packages/Gallardo7761/maven")
+            name = "Fragua"
+            url = uri("https://git.killobyte.es/api/packages/Gallardo7761/maven")
 
             credentials {
                 username = System.getenv("GITEA_USER") ?: project.findProperty("giteaUser") as String?
